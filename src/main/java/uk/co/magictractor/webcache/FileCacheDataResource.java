@@ -23,13 +23,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.io.Files;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,61 +52,8 @@ public class FileCacheDataResource implements CacheDataResource {
     }
 
     private static final File determineCacheBaseDir() {
-        File cacheBaseDir = sourceCacheBaseDir();
-        if (cacheBaseDir == null) {
-            // TODO! something better than this
-            cacheBaseDir = Files.createTempDir();
-        }
-
-        return cacheBaseDir;
-    }
-
-    private static File sourceCacheBaseDir() {
-        Class<?> baseClass = determineBaseClass();
-        URL classUrl = baseClass.getResource(baseClass.getSimpleName() + ".class");
-
-        if (!"file".contentEquals(classUrl.getProtocol())) {
-            // Not running from source, most likely a jar file.
-            // Not appropriate and not possible to write to src/main/resources
-            LOGGER.debug("Not file protocol, cannot write to src/main/resources: {}", classUrl);
-            return null;
-        }
-
-        // Use URI to tolerate spaces in path (seen with space in user name)
-        URI classUri;
-        try {
-            classUri = classUrl.toURI();
-        }
-        catch (URISyntaxException e) {
-            throw new IllegalStateException(e);
-        }
-        File file = new File(classUri);
-        if (!file.exists()) {
-            throw new IllegalStateException("File does not exist: " + classUrl.getFile());
-        }
-
-        boolean targetDir = false;
-        do {
-            String fileName = file.getName();
-            targetDir = "target".equals(fileName) || "bin".equals(fileName);
-            file = file.getParentFile();
-        } while (!targetDir);
-
-        File baseDir = new File(file, "/src/main/resources/webcache/");
-        LOGGER.info("Webcache base directory is {}", baseDir);
-
-        return baseDir;
-    }
-
-    private static Class<?> determineBaseClass() {
-        StackTraceElement[] stackTraceElements = new RuntimeException().getStackTrace();
-        StackTraceElement lastStackTraceElement = stackTraceElements[stackTraceElements.length - 1];
-        try {
-            return Class.forName(lastStackTraceElement.getClassName());
-        }
-        catch (ClassNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
+        // TODO! something more robust (optional environment variable?)
+        return Paths.get(System.getProperty("user.dir"), "webcache").toFile();
     }
 
     private String tidyDir(String dirName) {
