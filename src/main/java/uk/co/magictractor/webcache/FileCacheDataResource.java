@@ -31,11 +31,16 @@ import java.nio.charset.Charset;
 import com.google.common.base.MoreObjects;
 import com.google.common.io.Files;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Copy of a DataResource which is used for local caches of web files, decrypted
  * files and pretty printed Json.
  */
 public class FileCacheDataResource implements CacheDataResource {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileCacheDataResource.class);
 
     private static final File CACHE_BASE_DIR = determineCacheBaseDir();
 
@@ -59,26 +64,14 @@ public class FileCacheDataResource implements CacheDataResource {
         return cacheBaseDir;
     }
 
-    // Maybe used IOUtil.projectDir() instead of this. But this class could get pulled into a distinct project,
-    // so keep decoupled for now.
     private static File sourceCacheBaseDir() {
-        // TODO! this is a nasty hack created when spitting the project
-        // Maybe use a stack trace to determine where main() was.
-        // Class<FileCacheDataResource> baseClass = FileCacheDataResource.class;
-        Class<?> baseClass;
-        try {
-            baseClass = Class.forName("uk.co.magictractor.gowbuddy.core.Troop");
-        }
-        catch (ClassNotFoundException e) {
-            throw new IllegalStateException();
-        }
-        System.err.println("Temp hack used in sourceCacheBaseDir(). Must be addressed properly.");
+        Class<?> baseClass = determineBaseClass();
         URL classUrl = baseClass.getResource(baseClass.getSimpleName() + ".class");
 
-        //System.out.println("protocol: " + classUrl.getProtocol());
         if (!"file".contentEquals(classUrl.getProtocol())) {
             // Not running from source, most likely a jar file.
-            // Not appropriate and not possible to write to /src/main/resources
+            // Not appropriate and not possible to write to src/main/resources
+            LOGGER.debug("Not file protocol, cannot write to src/main/resources: {}", classUrl);
             return null;
         }
 
@@ -98,14 +91,25 @@ public class FileCacheDataResource implements CacheDataResource {
         boolean targetDir = false;
         do {
             String fileName = file.getName();
-            // System.err.println(file.getName());
             targetDir = "target".equals(fileName) || "bin".equals(fileName);
             file = file.getParentFile();
         } while (!targetDir);
 
-        // System.err.println("baseDir: " + file);
+        File baseDir = new File(file, "/src/main/resources/webcache/");
+        LOGGER.info("Webcache base directory is {}", baseDir);
 
-        return new File(file, "/src/main/resources/webcache/");
+        return baseDir;
+    }
+
+    private static Class<?> determineBaseClass() {
+        StackTraceElement[] stackTraceElements = new RuntimeException().getStackTrace();
+        StackTraceElement lastStackTraceElement = stackTraceElements[stackTraceElements.length - 1];
+        try {
+            return Class.forName(lastStackTraceElement.getClassName());
+        }
+        catch (ClassNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private String tidyDir(String dirName) {
@@ -137,9 +141,8 @@ public class FileCacheDataResource implements CacheDataResource {
 
         file.getParentFile().mkdirs();
 
-        System.err.println("createNewFile: " + file);
+        LOGGER.debug("Creating new file {}", file);
 
-        // Files.createDirectories()
         file.createNewFile();
     }
 
