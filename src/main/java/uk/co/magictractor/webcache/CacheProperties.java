@@ -28,6 +28,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -65,6 +68,8 @@ public final class CacheProperties {
 
     private static final String ETAG_KEY = "ETag";
 
+    private static final List<String> RESERVED_KEYS = List.of(BODY_BASE_KEY, BODY_EXTENSION_KEY, CONTENT_TYPE_KEY, CHARSET_KEY, TIMESTAMP_KEY, LAST_MODIFIED_KEY, ETAG_KEY);
+
     private String bodyBase;
     private String bodyExtension;
     private String contentType;
@@ -72,12 +77,14 @@ public final class CacheProperties {
     private String lastModified;
     private ZonedDateTime timestamp;
     private String etag;
+    private Map<String, String> customProperties;
 
     public static final CacheProperties newWithDefaults() {
         CacheProperties properties = new CacheProperties();
         properties.setBodyBase("body");
+        // no longer needed - tbc (I think this dates back to an impl using an ordered map)
         // Set null to create a placeholder, giving consistent ordering for the property across resources.
-        properties.setBodyExtension(null);
+        // properties.setBodyExtension(null);
 
         return properties;
     }
@@ -166,6 +173,31 @@ public final class CacheProperties {
         this.etag = etag;
     }
 
+    public String getCustomProperty(String key) {
+        return customProperties == null ? null : customProperties.get(key);
+    }
+
+    public void setCustomProperty(String key, String value) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        if (RESERVED_KEYS.contains(key)) {
+            throw new IllegalArgumentException();
+        }
+
+        if (customProperties == null) {
+            // LinkedHashMap to preserve insertion order
+            customProperties = new LinkedHashMap<>();
+        }
+
+        if (value == null) {
+            customProperties.remove(key);
+        }
+        else {
+            customProperties.put(key, value);
+        }
+    }
+
     public void read(InputStream in) throws IOException {
         InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8);
         read(reader);
@@ -238,7 +270,7 @@ public final class CacheProperties {
                 setEtag(value);
                 break;
             default:
-                throw new IllegalStateException("Code needs modification to handle ");
+                setCustomProperty(key, value);
         }
     }
 
@@ -257,6 +289,11 @@ public final class CacheProperties {
         isFirst = write(writer, LAST_MODIFIED_KEY, getLastModified(), isFirst);
         isFirst = write(writer, ETAG_KEY, getEtag(), isFirst);
         isFirst = write(writer, TIMESTAMP_KEY, getTimestamp(), isFirst);
+        if (customProperties != null) {
+            for (Map.Entry<String, String> customEntry : customProperties.entrySet()) {
+                isFirst = write(writer, customEntry.getKey(), customEntry.getValue(), isFirst);
+            }
+        }
         writer.write("\n}\n");
         writer.flush();
     }
