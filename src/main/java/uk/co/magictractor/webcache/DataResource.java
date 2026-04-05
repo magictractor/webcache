@@ -38,13 +38,15 @@ public interface DataResource {
     InputStream openInputStream();
 
     default Reader openReader() {
+        InputStream inputStream = openInputStream();
+
         Charset charset = getCharset();
-        if (getCharset() == null) {
+        if (charset == null) {
             throw new IllegalStateException(
                 "Charset unknown. Specify a default using getCharset() or use openReader(Charset).");
         }
 
-        return openReader(charset);
+        return new InputStreamReader(inputStream, charset);
     }
 
     /** Caller is responsible for closing the reader. */
