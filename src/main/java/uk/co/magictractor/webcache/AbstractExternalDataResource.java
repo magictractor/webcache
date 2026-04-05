@@ -60,10 +60,11 @@ public abstract class AbstractExternalDataResource implements ExternalDataResour
                 if (rss.isModified()) {
                     InputStream in = rss.getInputStream();
 
-                    // fetchResource() may have explictly set properties, but if not, values can be inferred.
-                    inferProperties();
-
                     preSaveBody();
+
+                    // fetchResource() and preSaveBody() may have explicitly set properties,
+                    // but if not, values can be inferred.
+                    inferProperties();
 
                     // Save a local copy of the content.
                     CacheDataResource bodyResource = getBodyCacheDataResource();
@@ -173,12 +174,21 @@ public abstract class AbstractExternalDataResource implements ExternalDataResour
 
     private String inferExtension() {
         String contentType = getProperties().getContentType();
-        if (contentType != null) {
+        String extension = null;
+
+        if (contentType == null) {
+            // Do nothing, null will be returned.
+        }
+        else if ("text/plain".equals(contentType)) {
+            extension = ".txt";
+        }
+        else {
+            // Default.
             int slashIndex = contentType.indexOf("/");
-            return "." + contentType.substring(slashIndex + 1);
+            extension = "." + contentType.substring(slashIndex + 1);
         }
 
-        return null;
+        return extension;
     }
 
     private String inferContentType() {
