@@ -59,8 +59,14 @@ test {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    // temp
+    sourceSets.main.java.srcDirs += ['../util/src/main/java']
+  
+    // sourceCompatibility = JavaVersion.VERSION_1_8
+    // targetCompatibility = JavaVersion.VERSION_1_8
+    // TODO! revisit versions. Java 8 was intended but bumped up when importing JSON code.
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
     
     withSourcesJar()
     //withJavadocJar()
@@ -83,7 +89,13 @@ dependencies {
 
     // MoreObjects is used for toString() implementations
     // Strings.padStart() is used when converting RGB to hex.
+    // will get Guava transient via Util
     implementation libs.guava
+    
+    // temp? move json to its own project?
+    implementation("com.jayway.jsonpath:json-path:3.0.0")
+    implementation("com.google.code.gson:gson:2.13.2")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.21.2")
     
     testImplementation libs.junit.jupiter;
     testRuntimeOnly libs.junit.jupiter.platform;

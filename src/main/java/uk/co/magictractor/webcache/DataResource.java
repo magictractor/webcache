@@ -20,6 +20,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 
+import uk.co.magictractor.util.json.JsonReader;
+import uk.co.magictractor.util.json.JsonReaderConfig;
+
 /**
  *
  */
@@ -53,6 +56,14 @@ public interface DataResource {
             // Can get Json errors from properties files when properties structure changes.
             throw new IllegalStateException("Error reading " + this, e);
         }
+    }
+
+    // public JsonReader(DataResource dataResource, JsonReaderConfig config) {
+    //     this(() -> dataResource.openInputStream(), config);
+    // }
+
+    default JsonReader openJsonReader(JsonReaderConfig config) {
+        return new JsonReader(() -> openInputStream(), config);
     }
 
 }

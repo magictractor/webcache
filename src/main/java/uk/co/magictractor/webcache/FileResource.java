@@ -28,19 +28,21 @@ import com.google.common.base.MoreObjects;
 /**
  *
  */
-public class ExternalFileResource extends AbstractExternalDataResource {
+public class FileResource extends AbstractExternalDataResource {
 
     private static final ZoneId DEFAULT_ZONE_ID = TimeZone.getDefault().toZoneId();
 
-    // TODO! flexible locations (relative to user, different operating systems)
+    // TODO! flexible locations (relative to user, different operating systems, resources)
 
     private final File externalFile;
 
-    public static ExternalFileResource of(String fileName) {
-        return new ExternalFileResource(fileName);
+    public static FileResource of(String fileName) {
+        return new FileResource(fileName);
     }
 
-    private ExternalFileResource(String fileName) {
+    private FileResource(String fileName) {
+        getClass().getResource(fileName);
+
         externalFile = new File(fileName);
         if (!externalFile.exists()) {
             throw new IllegalArgumentException("File does not exist: " + fileName);
