@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.magictractor.webcache.listeners.pretty;
+package uk.co.magictractor.webcache.listeners;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +34,6 @@ import uk.co.magictractor.util.json.JsonWriter;
 import uk.co.magictractor.webcache.CacheDataResource;
 import uk.co.magictractor.webcache.ExternalDataResource;
 import uk.co.magictractor.webcache.WebCacheConstants;
-import uk.co.magictractor.webcache.listeners.AbstractExternalDataResourceListener;
 
 /**
  *
