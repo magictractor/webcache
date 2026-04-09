@@ -30,7 +30,7 @@ import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 
-import uk.co.magictractor.util.json.JsonWriter;
+import uk.co.magictractor.json.JsonWriter;
 import uk.co.magictractor.webcache.CacheDataResource;
 import uk.co.magictractor.webcache.ExternalDataResource;
 import uk.co.magictractor.webcache.WebCacheConstants;
