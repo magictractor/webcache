@@ -60,6 +60,8 @@ test {
 
 java {
     // temp
+    sourceSets.main.java.srcDirs += ['../json/src/main/java']
+    sourceSets.main.java.srcDirs += ['../service/src/main/java']
     sourceSets.main.java.srcDirs += ['../util/src/main/java']
   
     // sourceCompatibility = JavaVersion.VERSION_1_8
@@ -100,4 +102,7 @@ dependencies {
     testImplementation libs.junit.jupiter;
     testRuntimeOnly libs.junit.jupiter.platform;
     testImplementation libs.assertj;
+    
+    // temp while linking to source in other projects
+    implementation libs.junit.jupiter;
 }

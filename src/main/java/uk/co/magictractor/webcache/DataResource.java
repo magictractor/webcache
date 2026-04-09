@@ -20,8 +20,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 
-import uk.co.magictractor.util.json.JsonReader;
-import uk.co.magictractor.util.json.JsonReaderConfig;
+import uk.co.magictractor.json.JsonReader;
+import uk.co.magictractor.json.JsonReaderConfig;
 
 /**
  *
