@@ -51,6 +51,17 @@ publishing {
 
 // https://docs.gradle.org/current/userguide/declaring_repositories.html
 repositories {
+    // mavenLocal() for snapshots of other uk.co.magictractor projects
+    //
+    // The other projects should include the maven-publish plugin and use
+    // the publishToMavenLocal task.
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html.
+    //
+    // Alternatively, dependencies on the source of other projects may be
+    // created by adding includesBuild entries to settings.local.gradle.
+    // See notes beside the magictractor.co.uk dependency declarations below.
+    mavenLocal()
+
     mavenCentral()
 }
 
@@ -59,10 +70,6 @@ test {
 }
 
 java {
-    // temp
-    sourceSets.main.java.srcDirs += ['../json/src/main/java']
-    sourceSets.main.java.srcDirs += ['../util/src/main/java']
-  
     // sourceCompatibility = JavaVersion.VERSION_1_8
     // targetCompatibility = JavaVersion.VERSION_1_8
     // TODO! revisit versions. Java 8 was intended but bumped up when importing JSON code.
@@ -97,6 +104,13 @@ dependencies {
     implementation("com.jayway.jsonpath:json-path:3.0.0")
     implementation("com.google.code.gson:gson:2.13.2")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.21.2")
+    
+    // Local source may be used instead of a jar.
+    // To do so:
+    // 1. edit settings.local.gradle and add "includeBuild '../util' etc
+    // 2. open the sibling project containing the source
+    // 3. Run Refresh Gradle project on this project
+    implementation('uk.co.magictractor:json:0.0.1-SNAPSHOT')
     
     testImplementation libs.junit.jupiter;
     testRuntimeOnly libs.junit.jupiter.platform;
