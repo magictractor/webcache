@@ -61,7 +61,6 @@ test {
 java {
     // temp
     sourceSets.main.java.srcDirs += ['../json/src/main/java']
-    sourceSets.main.java.srcDirs += ['../service/src/main/java']
     sourceSets.main.java.srcDirs += ['../util/src/main/java']
   
     // sourceCompatibility = JavaVersion.VERSION_1_8
