@@ -1,4 +1,6 @@
 rootProject.buildFileName = "${rootProject.name}.gradle"
+// Changing rootProject.name adjusts the default artifactId and still works with includeBuild() from other projects
+rootProject.name = "magictractor-${rootProject.name}"
 
 // includeBuild(../{project}) entries may be added to
 // settings.local.gradle to link to source in sibling projects
