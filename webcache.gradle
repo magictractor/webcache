@@ -95,27 +95,18 @@ dependencies {
     // Logger implementation for unit tests and main() methods.
     runtimeOnly libs.logback.classic
 
-    // MoreObjects is used for toString() implementations
-    // Strings.padStart() is used when converting RGB to hex.
-    // will get Guava transient via Util
+    // MoreObjects is used for toString() implementations.
+    // ByteStream.copy() for copying data to a cache file.
     implementation libs.guava
-    
-    // temp? move json to its own project?
-    implementation("com.jayway.jsonpath:json-path:3.0.0")
-    implementation("com.google.code.gson:gson:2.13.2")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.21.2")
-    
+
     // Local source may be used instead of a jar.
     // To do so:
     // 1. edit settings.local.gradle and add "includeBuild '../util' etc
     // 2. open the sibling project containing the source
     // 3. Run Refresh Gradle project on this project
-    implementation('uk.co.magictractor:magictractor-json:0.0.1-SNAPSHOT')
+    implementation 'uk.co.magictractor:magictractor-json:0.0.1-SNAPSHOT'
     
     testImplementation libs.junit.jupiter;
     testRuntimeOnly libs.junit.jupiter.platform;
     testImplementation libs.assertj;
-    
-    // temp while linking to source in other projects
-    implementation libs.junit.jupiter;
 }
